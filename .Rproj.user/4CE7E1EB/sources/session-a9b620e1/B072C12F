@@ -1,0 +1,27 @@
+{
+    "id": "B072C12F",
+    "path": "~/Desktop/R_SSETE/SSRTE/R/get_initial_tot_ss.R",
+    "project_path": "R/get_initial_tot_ss.R",
+    "type": "r_source",
+    "hash": "4101925565",
+    "contents": "",
+    "dirty": false,
+    "created": 1762029713380.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "32,83",
+        "scrollLine": "20"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1762143965,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1762143965610,
+    "read_only": false,
+    "read_only_alternatives": []
+}

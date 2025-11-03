@@ -1,0 +1,27 @@
+Package: SSRTE
+Type: Package
+Title: Adaptive Sample Size Using a Totality of Evidence Approach
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Lan", "Shi",
+      email = "lan.shi@vanderbilt.edu",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+    mvtnorm,
+    gsDesign,
+    dplyr,
+    tidyr,
+    readr,
+    magrittr,
+    cli,
+    tibble
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

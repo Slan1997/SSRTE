@@ -1,0 +1,178 @@
+### use following for the example 
+nsim = 1e2
+alpha =.025
+beta = 0.2
+n_endpts = 6
+allocate_rate = 1
+mean_cohen_d_truth = .25  # underlying true mean Cohen's d
+timing_interim = 2/3
+max_ss_index = 2 # the ratio between the maximum of re-estimated sample size and original sample size
+mu_ct = c(4, 6, 4, 5, 7, 6)
+sd = c(.5,.5,1,1,2,2)  # the sd vector for 6 endpoints (assume common sd across treatment and control group)
+rho = matrix(c(
+  1.0, 0.1, 0.3, 0.7, 0.1, 0.3,
+  0.1, 1.0, 0.7, 0.1, 0.3, 0.7,
+  0.3, 0.7, 1.0, 0.1, 0.3, 0.7,
+  0.7, 0.1, 0.1, 1.0, 0.1, 0.3,
+  0.1, 0.3, 0.3, 0.1, 1.0, 0.7,
+  0.3, 0.7, 0.7, 0.3, 0.7, 1.0), nrow = 6, byrow = TRUE)
+
+SSR_type = "SSR-Power"
+global_test_type = "exact OLS"
+
+seed1 = 51
+seed2 = 82
+
+initial_tot_ss = TRUE
+# if want to compute the initial planned total sample size
+exp_mean_cohen_d_at_planning = .3
+
+SSRTE_simstudy(nsim=nsim,alpha, beta,n_endpts,....,) # complete this example.
+
+# export:
+SSRTE_simstudy <- function(nsim, alpha, beta,n_endpts,
+                           allocate_rate, 
+                           mean_cohen_d_truth, #underlying true mean Cohen's d
+                           mu_ct, #Mean vector for the control group.
+                           sd, # Standard deviations for each endpoint.
+                           rho,
+                           timing_interim,
+                           
+                           initial_tot_ss = TRUE,
+                           exp_mean_cohen_d_at_planning = NULL,
+                           tot_ss_ct = NULL,
+                           
+                           SSR_type,
+                           global_test_type,
+                           
+                           max_ss_index , #the ratio between the maximum of re-estimated sample size and original sample size
+                           
+                           seed1, # starting place of random seed for stage 1 data generation, full vector of seeds will be seeds+1:nsim
+                           seed2 # starting place of random seed for stage 2 data generation, full vector of seeds will be seeds+1:nsim
+                           
+){
+  ia_out = tibble::tibble()
+  fa_out = tibble::tibble() # since some simulation may end at the interim.
+  
+  rej_ind = rep(NA,nsim)  # indicator of rejection, either interim or final
+  
+  for (si in 1:nsim){
+    if (initial_tot_ss){
+      if (is.null(exp_mean_cohen_d_at_planning)) {
+        stop("Must provide a value for exp_mean_cohen_d_at_planning.",
+             call. = FALSE)
+      }
+      # check if there is input for "exp_mean_cohen_d_at_planning": best guess of the mean Cohen's d at the initial planning stage
+      init_ss = get_initial_tot_ss(
+        beta0  = beta,
+        r      = allocate_rate,
+        theta_k = exp_mean_cohen_d_at_planning,
+        n_endpts = n_endpts,
+        alpha0 = alpha,
+        rho    = rho,
+        timing0 = timing_interim
+      )
+      N_ct = init_ss$N_ct
+      n_ct = init_ss$n_ct
+      
+      N_trt = init_ss$N_trt
+      n_trt = init_ss$n_trt
+      
+      timing_actual    <- init_ss$timing_actual
+      
+    }else{
+      # add codes to check if there is user input for tot_ss_ct
+      N_ct = tot_ss_ct # has to be an integer, check if it's integer.
+      # interim control
+      n_ct <- round(N_ct * timing0)
+      # treatment totals (ceiling to keep allocation rate)
+      N_trt <- ceiling(N_ct * allocate_rate) 
+      n_trt <- ceiling(n_ct * allocate_rate)
+      # N_interim_actual <- n_ct + n_trt
+      # N_total_actual   <- N_ct + N_trt
+      timing_actual   <- (n_ct + n_trt) / (N_ct + N_trt)
+    }
+    
+    ### Data Generation - Stage 1
+    sim1 <- simulate_example_one_stage_data(
+      n_trt = n_trt, n_ct = n_ct,
+      n_endpts = n_endpts,
+      exp_mean_cohen_d = mean_cohen_d_truth,
+      mu_ct = mu_ct,
+      sd = sd,
+      rho = rho,
+      seed = seed1+si
+    )
+    
+    y_ct1  <- sim1$y_ct
+    y_trt1 <- sim1$y_trt
+    
+    ### Interim Analysis
+    ia <- interim_analysis(
+      y_trt1 = y_trt1,
+      y_ct1  = y_ct1,
+      N_trt = N_trt,
+      N_ct = N_ct,
+      N_ct_max = max_ss_index*N_ct,
+      timing_actual = timing_actual,
+      alpha0 = alpha,
+      beta0 = beta,
+      alloc_rate = allocate_rate,
+      n_endpts = n_endpts,
+      SSR_type = SSR_type,
+      global_test_type = global_test_type
+    )
+    # ia
+    sum_ia = dplyr::mutate(summary(ia),si)
+    ia_out = dplyr::bind_rows(ia_out,sum_ia)
+    
+    if (ia$decision =="Reject H0 at interim; stop the trial."){
+      rej_ind[si] = 1
+      next
+      
+    }else{ 
+      n_trt2  = ia$sample_sizes$stage2["treatment"]
+      n_ct2  = ia$sample_sizes$stage2["control"]
+      
+      ### Data Generation - Stage 2
+      sim2 <- simulate_example_one_stage_data(
+        n_trt = n_trt2, n_ct = n_ct2,
+        n_endpts = n_endpts,
+        exp_mean_cohen_d = mean_cohen_d_truth,
+        mu_ct = mu_ct,
+        sd = sd,
+        rho = rho,
+        seed = seed2+si
+      )
+      y_ct2  <- sim2$y_ct
+      y_trt2 <- sim2$y_trt
+      
+      ### Final Analysis
+      fa <- final_analysis(
+        interim = ia,
+        y_trt2 = y_trt2,
+        y_ct2  = y_ct2
+      )
+      # fa
+      sum_fa = dplyr::mutate(summary(fa),si)
+      fa_out = dplyr::bind_rows(fa_out,sum_fa)
+      if (fa$decision == "Reject H0 at final analysis."){
+        rej_ind[si] = 1
+      }else{
+        rej_ind[si] = 0
+      }
+        
+    }
+  }
+  
+  proportion_of_rejection = mean(rej_ind)
+  
+  return(list(interim_analysis =  dplyr::relocate(ia_out,si,1),
+              final_analysis = dplyr::relocate(fa_out,si,1),
+              proportion_of_rejection = proportion_of_rejection))
+}
+
+
+
+
+
