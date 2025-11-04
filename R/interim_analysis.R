@@ -303,9 +303,9 @@ print.interim_analysis <- function(x, digits = 3, ...) {
   cli::cli_text("Estimated conditional power: {fmt(x$ssr$estimated_CP)}")
   cli::cli_text("Promising zone? {if (isTRUE(x$ssr$promising_zone)) 'yes' else 'no'}")
   if (!is.na(x$ssr$n_hat_ct)) {
-    cli::cli_text("Estimated control n (before capping): {x$ssr$n_hat_ct}")
+    cli::cli_text("Estimated control N (before capping): {x$ssr$n_hat_ct}")
   }
-  cli::cli_text("Max allowed control n: {x$ssr$N_ct_max}")
+  cli::cli_text("Max allowed control N: {x$ssr$N_ct_max}")
 
   cli::cli_rule("Re-estimated Sample sizes")
   s1 <- x$sample_sizes$stage1
