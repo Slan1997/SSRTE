@@ -18,7 +18,8 @@
 #' @param alloc_rate Treatment:control allocation.
 #' @param n_endpts Number of endpoints.
 #' @param SSR_type \code{"SSR-Power"}, \code{"SSR-CP"}, or \code{"No SSR"}.
-#' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}.
+#' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}. If
+#'   \code{"Permutation"} is used, a random seed is needed to ensure reproducibility.
 #' @param nPM Number of permutations for the permutation test.
 #'
 #' @details
@@ -52,7 +53,7 @@
 #' y_ct1  <- sim$y_ct
 #' y_trt1 <- sim$y_trt
 #'
-#'
+#' # set.seed(1) # seed needed for "Permutation"
 #' ia <- interim_analysis(
 #'   y_trt1 = y_trt1,
 #'   y_ct1  = y_ct1,
