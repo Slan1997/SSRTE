@@ -23,6 +23,7 @@ SSRTE_simstudy(
   max_ss_index,
   seed1,
   seed2,
+  seed_PM = 1,
   nPM = 100
 )
 }
@@ -68,7 +69,9 @@ original plan).}
 
 \item{seed2}{Base seed for stage-2 simulations.}
 
-\item{nPM}{Number of permutations for the permutation test.}
+\item{seed_PM}{Base seed for Permutation. Default seed: 1.}
+
+\item{nPM}{Number of permutations for the permutation test. Default: 100.}
 }
 \value{
 A list with

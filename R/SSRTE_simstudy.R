@@ -39,12 +39,13 @@
 #'   (used only when \code{initial_tot_ss = FALSE}).
 #' @param SSR_type \code{"SSR-Power"}, \code{"SSR-CP"}, or \code{"No SSR"}.
 #' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}.
-#' @param nPM Number of permutations for the permutation test.
+#' @param nPM Number of permutations for the permutation test. Default: 100.
 #' @param max_ss_index Maximum inflation factor for SSR
 #'   (e.g., 2 means the sample size can at most be doubled relative to the
 #'   original plan).
 #' @param seed1 Base seed for stage-1 simulations.
 #' @param seed2 Base seed for stage-2 simulations.
+#' @param seed_PM Base seed for Permutation. Default seed: 1.
 #'
 #' @return A list with
 #' \itemize{
@@ -124,6 +125,7 @@ SSRTE_simstudy <- function(
     max_ss_index,
     seed1,
     seed2,
+    seed_PM = 1,
     nPM = 1e2
 ) {
   ia_out <- tibble::tibble()
@@ -187,6 +189,9 @@ SSRTE_simstudy <- function(
     y_trt1 <- sim1$y_trt
 
     # ------------------- 3. interim ------------------------------------------
+    if (global_test_type=="Permutation"){
+      set.seed(seed_PM)
+    }
     ia <- interim_analysis(
       y_trt1 = y_trt1,
       y_ct1  = y_ct1,
