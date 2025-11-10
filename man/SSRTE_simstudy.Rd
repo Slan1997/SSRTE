@@ -24,7 +24,8 @@ SSRTE_simstudy(
   seed1,
   seed2,
   seed_PM = 1,
-  nPM = 100
+  nPM = 100,
+  promising_LL = 0.2
 )
 }
 \arguments{
@@ -72,6 +73,8 @@ original plan).}
 \item{seed_PM}{Base seed for Permutation. Default seed: 1.}
 
 \item{nPM}{Number of permutations for the permutation test. Default: 100.}
+
+\item{promising_LL}{Lower bound of the promising zone. Default: 0.2. (Upper bound: 1-beta0)}
 }
 \value{
 A list with

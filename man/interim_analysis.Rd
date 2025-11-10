@@ -49,7 +49,7 @@ interim_analysis(
 
 \item{nPM}{Number of permutations for the permutation test.}
 
-\item{promising_LL}{Lower bound of the promising zone. Default: 0.2; upper bound: 1-beta0.}
+\item{promising_LL}{Lower bound of the promising zone. Default: 0.2. (Upper bound: 1-beta0)}
 }
 \value{
 An object of class \code{"interim_analysis"}.

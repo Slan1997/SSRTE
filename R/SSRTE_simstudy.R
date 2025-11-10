@@ -40,6 +40,7 @@
 #' @param SSR_type \code{"SSR-Power"}, \code{"SSR-CP"}, or \code{"No SSR"}.
 #' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}.
 #' @param nPM Number of permutations for the permutation test. Default: 100.
+#' @param promising_LL Lower bound of the promising zone. Default: 0.2. (Upper bound: 1-beta0)
 #' @param max_ss_index Maximum inflation factor for SSR
 #'   (e.g., 2 means the sample size can at most be doubled relative to the
 #'   original plan).
@@ -126,7 +127,8 @@ SSRTE_simstudy <- function(
     seed1,
     seed2,
     seed_PM = 1,
-    nPM = 1e2
+    nPM = 1e2,
+    promising_LL = 0.2
 ) {
   ia_out <- tibble::tibble()
   fa_out <- tibble::tibble()
@@ -205,7 +207,8 @@ SSRTE_simstudy <- function(
       n_endpts = n_endpts,
       SSR_type = SSR_type,
       global_test_type = global_test_type,
-      nPM = nPM
+      nPM = nPM,
+      promising_LL = promising_LL
     )
 
     sum_ia <- dplyr::mutate(summary(ia), sim_id = si)

@@ -21,7 +21,7 @@
 #' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}. If
 #'   \code{"Permutation"} is used, a random seed is needed to ensure reproducibility.
 #' @param nPM Number of permutations for the permutation test.
-#' @param promising_LL Lower bound of the promising zone. Default: 0.2; upper bound: 1-beta0.
+#' @param promising_LL Lower bound of the promising zone. Default: 0.2. (Upper bound: 1-beta0)
 #'
 #' @details
 #' This function calls the following **in-package** helpers:
