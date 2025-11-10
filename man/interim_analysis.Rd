@@ -17,7 +17,8 @@ interim_analysis(
   n_endpts,
   SSR_type,
   global_test_type,
-  nPM = 100
+  nPM = 100,
+  promising_LL = 0.2
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ interim_analysis(
 \code{"Permutation"} is used, a random seed is needed to ensure reproducibility.}
 
 \item{nPM}{Number of permutations for the permutation test.}
+
+\item{promising_LL}{Lower bound of the promising zone. Default: 0.2; upper bound: 1-beta0.}
 }
 \value{
 An object of class \code{"interim_analysis"}.

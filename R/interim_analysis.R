@@ -21,6 +21,7 @@
 #' @param global_test_type \code{"exact OLS"} or \code{"Permutation"}. If
 #'   \code{"Permutation"} is used, a random seed is needed to ensure reproducibility.
 #' @param nPM Number of permutations for the permutation test.
+#' @param promising_LL Lower bound of the promising zone. Default: 0.2; upper bound: 1-beta0.
 #'
 #' @details
 #' This function calls the following **in-package** helpers:
@@ -83,7 +84,8 @@ interim_analysis <- function(
     n_endpts,
     SSR_type,
     global_test_type,
-    nPM = 1e2
+    nPM = 1e2,
+    promising_LL = 0.2
 ) {
   # --- derive stage-1 sizes ---------------------------------------------------
   if (!is.matrix(y_trt1)) y_trt1 <- as.matrix(y_trt1)
@@ -192,8 +194,7 @@ interim_analysis <- function(
       K = n_endpts,
       sum_rho = sum_rho
     )
-
-    if (est_CP > 0.2 && est_CP < 0.8) {
+    if (est_CP > promising_LL && est_CP < (1 - beta0)) {
       promising_zone <- TRUE
 
       if (SSR_type == "SSR-Power") {
